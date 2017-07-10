@@ -1,10 +1,17 @@
-// 这是我们的玩家要躲避的敌人 
+var WIDTH = 505, 
+	HEIGHT = 606,
+	CELL_WIDTH = 101,
+	CELL_HEIGHT = 83,
+	XIAO_WIDTH = 55,
+	SP_WIDTH = 404;
+
+// 这是我们的玩家要躲避的敌人
 var Enemy = function(x,y,speed) {
     // 要应用到每个敌人的实例的变量写在这里
     // 我们已经提供了一个来帮助你实现更多
-	this.x = x;
+	this.x = x || Math.random()*(80 - 0) + 0;
     this.y = y;
-    this.speed = speed;
+    this.speed = speed || Math.random()*(100 - 20) + 20;
     // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
 };
@@ -16,8 +23,8 @@ Enemy.prototype.update = function(dt) {
     // 你应该给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上
     // 都是以同样的速度运行的
     this.x += dt * this.speed;
-    if(this.x > 505){
-    	this.x = -101;
+    if(this.x > WIDTH){
+    	this.x = -CELL_WIDTH;
     }
 };
 
@@ -26,7 +33,8 @@ Enemy.prototype.checkCollisions = function(){
 	if((Math.abs(this.x - player.x))<40){
 			if((Math.abs(this.y - player.y))=== 0){
 				console.log("撞了");
-				player = new Player(200,83 * 3 + 55);
+				//player = new Player(200,CELL_HEIGHT * 4 + XIAO_WIDTH);
+				player.reset();
 			}
        };
 	
@@ -50,12 +58,17 @@ var Player = function(x,y) {
     this.y = y;
     this.sprite = 'images/char-boy.png';
 };
-
+Player.prototype.reset = function(){
+	this.x = 200;
+	this.y = CELL_HEIGHT * 4 + XIAO_WIDTH;
+};
 Player.prototype.update = function(){
-	if(this.y === -28){
+
+	if(this.y === -28){	
 		console.log("成功");
-		player = new Player(200,83 * 3 + 55);
+		return this.reset();
 	};
+	
 };
 Player.prototype.render = function(){
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -64,26 +77,26 @@ Player.prototype.handleInput = function(movement){
 	switch(movement){
 		case"left": 
 			if(this.x > 0){
-				this.x -= 101;
+				this.x -= CELL_WIDTH;
 			}else{
 				this.x = 0;
 			}
 		break;
 		case"right": 
-			if(this.x < 404){
-				this.x += 101;
+			if(this.x < SP_WIDTH){
+				this.x += CELL_WIDTH;
 			}else{
-				this.x = 404;
+				this.x = SP_WIDTH;
 			}
 		break;
 		case"up": 
-			if(this.y >= 55){
-				this.y -= 83;
+			if(this.y >= -0){
+				this.y -= CELL_HEIGHT;
 			}
 		break;
 		case"down": 
-			if(this.y <= 606){
-				this.y += 83;
+			if(this.y <= HEIGHT){
+				this.y += CELL_HEIGHT;
 			}
 		break;
 		
@@ -91,8 +104,8 @@ Player.prototype.handleInput = function(movement){
 	
 };
 
-var allEnemies = [new Enemy(0,83 * 0 + 55,20),new Enemy(23,83 * 1 + 55,50),new Enemy(50,83 * 2 + 55,30)];
-var player = new Player(200,83 * 3 + 55);
+var allEnemies = [new Enemy(this.x,CELL_HEIGHT * 0 + XIAO_WIDTH,this.speed),new Enemy(this.x,CELL_HEIGHT * 1 + XIAO_WIDTH,this.speed),new Enemy(this.x,CELL_HEIGHT * 2 + XIAO_WIDTH,this.speed)];
+var player = new Player(200,CELL_HEIGHT * 4 + XIAO_WIDTH);
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
 // 方法里面。你不需要再更改这段代码了。
